@@ -1,0 +1,25 @@
+version: '3'
+services:
+    web:
+        build: "."
+        ports:
+            - "5000:5000"
+        environment:
+            MONGODB_DATABASE: yourdb
+            MONGODB_USERNAME: admin
+            MONGODB_PASSWORD: admin
+            MONGODB_HOSTNAME: localhost
+            MONGODB_PORT: '27107'
+        depends_on:
+            - mongo
+    mongo:
+        image: mongo
+        ports:
+            - "27017:27017"
+        command: [--auth]
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: admin
+            MONGO_INITDB_DATABASE: yourdb
+            MONGODB_DATA_DIR: /data/db
+            MONDODB_LOG_DIR: /dev/null

@@ -1,0 +1,85 @@
+replicaCount: 1
+
+#image name
+image:
+  repository: vedant2040/eve-python-gen
+  tag: "latest"
+
+annotations:
+  app: eve-python
+
+labels:
+  app: eve-python 
+
+matchLabels:
+  app: eve-python 
+
+#CLuster IP service
+service:
+  type: ClusterIP
+  port: 5000
+
+#rolling update
+rollingUpdate:
+  enabled: true
+  maxSurge: "1"
+  maxUnavailable: "1"
+
+#resources
+resources:
+   limits:
+     cpu: 150m
+     memory: 128Mi
+   requests:
+     cpu: 50m
+     memory: 80Mi
+
+#HPA/HA enabled default
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+#Pod Distrubtion budget
+podDistruptionBudget:
+  minAvailable: 2
+#Health Check
+livenessProbe:
+  httpGet:
+    path: /status
+    port: http
+  initialDelaySeconds: 20
+  periodSeconds: 30
+  timeoutSeconds: 30
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 20
+  periodSeconds: 30
+  timeoutSeconds: 30
+
+#Node affinity
+affinity:
+  nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app-deployment
+                operator: In
+                values:
+                - "true"
+              - key: db-deployment
+                operator: NotIn
+                values:
+                - "false"
+              - key: monitoring-deployment
+                operator: NotIn
+                values:
+                - "false"
+
+#config map
+configMap:
+  configmap-eve:[]
